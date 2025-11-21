@@ -1,0 +1,29 @@
+# Stuff we don't need to track (build folders and junk)
+build/
+out/
+bin/
+obj/
+
+# CMake generates these, we can ignore 'em
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Visual Studio clutter
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+*.sdf
+*.opensdf
+
+# VS Code settings (personal pref)
+.vscode/
+
+# Windows system garbage
+Thumbs.db
+Desktop.ini
