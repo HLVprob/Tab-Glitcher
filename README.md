@@ -5,7 +5,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg)
 ![C++](https://img.shields.io/badge/language-C%2B%2B20-f34b7d.svg)
 
-##  Features
+## 🔥 Features
 
 *   **Modern UI:** Clean, dark-themed interface built with ImGui.
 *   **Custom Hotkeys:** Bind any keyboard key or mouse button (including Mouse4/Mouse5).
@@ -13,7 +13,7 @@
 *   **Safe & Focused:** Specifically targets `RobloxPlayerBeta.exe`, leaving other applications untouched.
 *   **Lightweight:** Written in C++ for minimal resource usage.
 
-##  Build & Installation
+## 🚀 Build & Installation
 
 This project uses **CMake**. Ensure you have Visual Studio (with C++ workload) and CMake installed.
 
@@ -33,7 +33,7 @@ This project uses **CMake**. Ensure you have Visual Studio (with C++ workload) a
 
 3.  Run `TabGlitcher.exe` from the `Release` directory.
 
-##  Usage
+## 🎮 Usage
 
 1.  Run **TabGlitcher** as Administrator (Recommended).
 2.  Open **Roblox** and join a game.
