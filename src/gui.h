@@ -16,7 +16,6 @@ public:
     void UpdateStatusDisplay(const std::wstring& status);
     void ShowError(const std::wstring& message);
 
-    // Getters for controls
     HWND GetHotkeyButton() const { return hotkey_button_; }
     HWND GetStartButton() const { return start_button_; }
     HWND GetStopButton() const { return stop_button_; }
