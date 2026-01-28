@@ -38,7 +38,7 @@ bool HotkeyManager::SetHotkeyMode(bool enabled) {
     is_setting_hotkey_ = enabled;
     
     if (enabled) {
-        // Hook into the system to catch keys
+
         HINSTANCE hInstance = GetModuleHandleW(nullptr);
         
         keyboard_hook_ = SetWindowsHookExW(
@@ -67,7 +67,7 @@ bool HotkeyManager::SetHotkeyMode(bool enabled) {
         
         wcscpy_s(hotkey_name_, L"Press any key...");
     } else {
-        // Remove the hooks, we're done
+
         if (keyboard_hook_) {
             UnhookWindowsHookEx(keyboard_hook_);
             keyboard_hook_ = nullptr;
@@ -100,7 +100,7 @@ LRESULT CALLBACK HotkeyManager::LowLevelMouseProc(int nCode, WPARAM wParam, LPAR
 
 void HotkeyManager::HandleKeyboardEvent(WPARAM wParam, LPARAM lParam) {
     if (!is_setting_hotkey_) {
-        // Just normal key processing
+
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
             KBDLLHOOKSTRUCT* kbd = (KBDLLHOOKSTRUCT*)lParam;
             int key_code = kbd->vkCode;
@@ -119,20 +119,18 @@ void HotkeyManager::HandleKeyboardEvent(WPARAM wParam, LPARAM lParam) {
         return;
     }
     
-    // We're in capture mode, waiting for a key
     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
         KBDLLHOOKSTRUCT* kbd = (KBDLLHOOKSTRUCT*)lParam;
         captured_hotkey_ = kbd->vkCode;
         SetKeyName(captured_hotkey_);
         
-        // Got it! Back to normal mode but keep listening
         is_setting_hotkey_ = false;
     }
 }
 
 void HotkeyManager::HandleMouseEvent(WPARAM wParam, LPARAM lParam) {
     if (!is_setting_hotkey_) {
-        // Normal mouse clicks
+
         if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || 
             wParam == WM_MBUTTONDOWN || wParam == WM_XBUTTONDOWN) {
             
@@ -173,7 +171,6 @@ void HotkeyManager::HandleMouseEvent(WPARAM wParam, LPARAM lParam) {
         return;
     }
     
-    // Waiting for a mouse click to set as hotkey
     if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || 
         wParam == WM_MBUTTONDOWN || wParam == WM_XBUTTONDOWN) {
         
@@ -194,7 +191,6 @@ void HotkeyManager::HandleMouseEvent(WPARAM wParam, LPARAM lParam) {
             break;
         }
         
-        // Got it! Back to normal mode but keep listening
         is_setting_hotkey_ = false;
     }
 }
