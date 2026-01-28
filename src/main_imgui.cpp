@@ -12,19 +12,16 @@
 #include "hotkey_manager.h"
 #include "resource.h"
 
-// Global stuff we need
 static ID3D11Device*            g_pd3dDevice = nullptr;
 static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*          g_pSwapChain = nullptr;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = nullptr;
 
-// Heads up on functions coming later
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 
-// Win32 message handler
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 class TabGlitcherApp {
@@ -55,7 +52,6 @@ private:
     std::wstring current_hotkey_name_;
     std::wstring status_text_;
     
-    // Make it look pretty
     float window_alpha_;
     ImVec4 primary_color_;
     ImVec4 success_color_;
@@ -69,10 +65,10 @@ TabGlitcherApp::TabGlitcherApp()
     , current_hotkey_name_(L"Not Set")
     , status_text_(L"Inactive")
     , window_alpha_(1.0f)
-    , primary_color_(ImVec4(0.13f, 0.59f, 0.95f, 1.0f))  // Modern blue
-    , success_color_(ImVec4(0.13f, 0.75f, 0.38f, 1.0f))   // Green
-    , error_color_(ImVec4(0.91f, 0.30f, 0.24f, 1.0f))     // Red
-    , warning_color_(ImVec4(0.95f, 0.61f, 0.07f, 1.0f))   // Yellow
+    , primary_color_(ImVec4(0.13f, 0.59f, 0.95f, 1.0f))
+    , success_color_(ImVec4(0.13f, 0.75f, 0.38f, 1.0f))
+    , error_color_(ImVec4(0.91f, 0.30f, 0.24f, 1.0f))
+    , warning_color_(ImVec4(0.95f, 0.61f, 0.07f, 1.0f))
 {
     hotkey_manager_ = std::make_unique<HotkeyManager>();
 }
@@ -84,7 +80,7 @@ TabGlitcherApp::~TabGlitcherApp() {
 }
 
 bool TabGlitcherApp::Initialize(HWND hwnd) {
-    // Get the hotkey stuff ready
+
     if (!hotkey_manager_->Initialize(
         [this](int key_code, bool is_pressed) { OnHotkeyPressed(key_code, is_pressed); }
     )) {
@@ -95,7 +91,7 @@ bool TabGlitcherApp::Initialize(HWND hwnd) {
 }
 
 void TabGlitcherApp::Render() {
-    // Did we just catch a key press?
+
     if (!hotkey_manager_->IsSettingHotkey() && current_hotkey_ == 0) {
         int captured = hotkey_manager_->GetCapturedHotkey();
         if (captured != 0) {
@@ -105,7 +101,6 @@ void TabGlitcherApp::Render() {
         }
     }
     
-    // Styling time
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 12.0f;
     style.FrameRounding = 8.0f;
@@ -119,9 +114,8 @@ void TabGlitcherApp::Render() {
     style.ItemSpacing = ImVec2(12, 8);
     style.ItemInnerSpacing = ImVec2(8, 6);
     
-    // Our color palette
     ImVec4* colors = style.Colors;
-    colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);  // Dark background
+    colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
     colors[ImGuiCol_ChildBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
     colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
     
@@ -155,14 +149,12 @@ void TabGlitcherApp::RenderMainInterface() {
     ImGui::Begin("Tab Glitcher", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | 
                                        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
     
-    // Fancy header
-    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]); // Large font
+    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
     ImGui::TextColored(primary_color_, "Tab Glitcher");
     ImGui::PopFont();
     ImGui::Text("Roblox Process Suspend Tool");
     ImGui::Separator();
     
-    // The buttons and stuff
     RenderHotkeySection();
     ImGui::Spacing();
     RenderStatusSection();
@@ -177,11 +169,9 @@ void TabGlitcherApp::RenderHotkeySection() {
     
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));
     
-    // Show the current key
     ImGui::Text("Current Hotkey:");
     ImGui::SameLine();
     
-    // Convert weird chars to normal text
     std::string hotkey_str;
     for (wchar_t wc : current_hotkey_name_) {
         if (wc == 0 || wc > 127) break;
@@ -192,7 +182,6 @@ void TabGlitcherApp::RenderHotkeySection() {
     ImGui::Text("%s", hotkey_str.c_str());
     ImGui::PopStyleColor();
     
-    // Clicky things
     if (ImGui::Button("Set Hotkey", ImVec2(120, 40))) {
         OnSetHotkeyButton();
     }
@@ -239,7 +228,6 @@ void TabGlitcherApp::RenderHotkeySection() {
 void TabGlitcherApp::RenderStatusSection() {
     ImGui::TextColored(ImVec4(0.95f, 0.95f, 0.95f, 1.0f), "Status");
     
-    // Color-coded status updates
     ImVec4 status_color = ImVec4(0.95f, 0.95f, 0.95f, 1.0f);
     if (status_text_.find(L"Suspended") != std::wstring::npos) {
         status_color = warning_color_;
@@ -251,7 +239,6 @@ void TabGlitcherApp::RenderStatusSection() {
         status_color = error_color_;
     }
     
-    // Convert weird chars to normal text
     std::string status_str;
     for (wchar_t wc : status_text_) {
         if (wc == 0 || wc > 127) break;
@@ -260,14 +247,12 @@ void TabGlitcherApp::RenderStatusSection() {
     
     ImGui::TextColored(status_color, "%s", status_str.c_str());
     
-    // Info about the game process
     if (is_running_ && process_manager_.IsProcessOpen()) {
         ImGui::Spacing();
         ImGui::Text("Process ID: %lu", process_manager_.GetProcessId());
         ImGui::Text("Process: RobloxPlayerBeta.exe");
     }
     
-    // Dev stuff
     if (hotkey_manager_->IsSettingHotkey()) {
         ImGui::Spacing();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "DEBUG: Waiting for hotkey input...");
@@ -295,7 +280,7 @@ void TabGlitcherApp::OnSetHotkeyButton() {
 
     hotkey_manager_->SetHotkeyMode(true);
     status_text_ = L"Press any key or mouse button to set hotkey...";
-    current_hotkey_ = 0; // Reset current hotkey
+    current_hotkey_ = 0;
     current_hotkey_name_ = L"Waiting...";
 }
 
@@ -314,10 +299,6 @@ void TabGlitcherApp::OnStartButton() {
         status_text_ = L"Error - Roblox not found";
         return;
     }
-
-    // Don't kill the hooks, we still need 'em
-    // Don't call SetHotkeyMode(false) as it removes hooks
-    // The hooks are already installed from when we captured the hotkey
 
     is_running_ = true;
     current_hotkey_name_ = hotkey_manager_->GetHotkeyName();
@@ -357,15 +338,12 @@ void TabGlitcherApp::Shutdown() {
     }
 }
 
-// Heads up on functions coming later
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Global app instance
 static std::unique_ptr<TabGlitcherApp> g_app;
 
-// The main show
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
-    // Spin up the window
+
     HICON hIcon = static_cast<HICON>(LoadImageW(hInstance, MAKEINTRESOURCEW(IDI_APPICON), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE));
 
     WNDCLASSEXW wc = { sizeof(WNDCLASSEXW) };
@@ -383,46 +361,37 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
     ::RegisterClassExW(&wc);
     HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Tab Glitcher - Roblox Process Suspend Tool", WS_OVERLAPPEDWINDOW, 100, 100, 600, 450, nullptr, nullptr, wc.hInstance, nullptr);
 
-    // Fire up the graphics engine
     if (!CreateDeviceD3D(hwnd)) {
         CleanupDeviceD3D();
         ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
         return 1;
     }
 
-    // Here we go!
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
 
-    // Init the UI library
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
-    // Load custom fonts
     ImFont* font_default = io.Fonts->AddFontDefault();
     ImFont* font_large = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
     ImFont* font_title = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 24.0f);
-    // Build() is called automatically by the backend in new ImGui versions
 
-    // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-    // Initialize app
     g_app = std::make_unique<TabGlitcherApp>();
     if (!g_app->Initialize(hwnd)) {
         return 1;
     }
 
-    // The infinite loop of doom (until you close it)
     bool done = false;
     while (!done) {
-        // Check for clicks and keypresses
+
         MSG msg;
         while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
             ::TranslateMessage(&msg);
@@ -433,25 +402,21 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
         if (done)
             break;
 
-        // New frame, new me
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // Draw the UI
         g_app->Render();
 
-        // Rendering
         ImGui::Render();
         const float clear_color[4] = { 0.06f, 0.06f, 0.06f, 1.0f };
         g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        g_pSwapChain->Present(1, 0); // Present with vsync
+        g_pSwapChain->Present(1, 0);
     }
 
-    // Clean up our mess
     g_app->Shutdown();
     g_app.reset();
     ImGui_ImplDX11_Shutdown();
@@ -465,9 +430,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
     return 0;
 }
 
-// Helper functions
 bool CreateDeviceD3D(HWND hWnd) {
-    // Setup swap chain
+
     DXGI_SWAP_CHAIN_DESC sd;
     ZeroMemory(&sd, sizeof(sd));
     sd.BufferCount = 2;
@@ -515,7 +479,6 @@ void CleanupRenderTarget() {
     if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
 }
 
-// Win32 message handler
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
@@ -529,7 +492,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
         return 0;
     case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+        if ((wParam & 0xfff0) == SC_KEYMENU)
             return 0;
         break;
     case WM_DESTROY:
