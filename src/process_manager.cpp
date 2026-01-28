@@ -13,10 +13,9 @@ ProcessManager::~ProcessManager() {
 }
 
 bool ProcessManager::FindRobloxProcess() {
-    // Close any existing process if we have one
+
     CloseProcess();
 
-    // Take a snapshot of all running processes
     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (snapshot == INVALID_HANDLE_VALUE) {
         return false;
@@ -25,18 +24,15 @@ bool ProcessManager::FindRobloxProcess() {
     PROCESSENTRY32W pe32;
     pe32.dwSize = sizeof(PROCESSENTRY32W);
 
-    // Grab the first one
     if (!Process32FirstW(snapshot, &pe32)) {
         CloseHandle(snapshot);
         return false;
     }
 
-    // Loop through 'em all
     do {
         if (_wcsicmp(pe32.szExeFile, process_name_.c_str()) == 0) {
             process_id_ = pe32.th32ProcessID;
             
-            // Open it up with the powers we need
             process_handle_ = OpenProcess(
                 PROCESS_SUSPEND_RESUME | PROCESS_QUERY_INFORMATION,
                 FALSE,
@@ -44,7 +40,7 @@ bool ProcessManager::FindRobloxProcess() {
             );
 
             if (process_handle_) {
-                // Find all the threads so we can freeze 'em later
+
                 if (EnumerateThreads()) {
                     CloseHandle(snapshot);
                     return true;
