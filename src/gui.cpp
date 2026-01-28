@@ -24,21 +24,20 @@ GUI::~GUI() {
 }
 
 bool GUI::Initialize(HINSTANCE hInstance) {
-    // Set up the window class (make it look modern)
+
     WNDCLASSEXW wc = {};
     wc.cbSize = sizeof(WNDCLASSEXW);
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-    wc.hbrBackground = CreateSolidBrush(RGB(248, 249, 250)); // Light gray background
+    wc.hbrBackground = CreateSolidBrush(RGB(248, 249, 250));
     wc.lpszClassName = L"TabGlitcherWindow";
     
     if (!RegisterClassExW(&wc)) {
         return false;
     }
 
-    // Build the main window
     hwnd_ = CreateWindowExW(
         WS_EX_OVERLAPPEDWINDOW,
         L"TabGlitcherWindow",
@@ -53,10 +52,8 @@ bool GUI::Initialize(HINSTANCE hInstance) {
         return false;
     }
 
-    // Turn on the fancy modern look
     ApplyModernStyling();
     
-    // Add all the buttons and labels
     CreateControls();
     
     CenterWindow();
@@ -90,7 +87,7 @@ void GUI::Shutdown() {
 }
 
 void GUI::ApplyModernStyling() {
-    // Use DWM for that sleek dark mode
+
     if (HWND hwnd = hwnd_) {
         DWMWINDOWATTRIBUTE dwm_attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
         BOOL value = TRUE;
@@ -99,7 +96,7 @@ void GUI::ApplyModernStyling() {
 }
 
 void GUI::CreateControls() {
-    // Load up some nice fonts
+
     title_font_ = CreateFontW(
         -20, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
@@ -112,7 +109,6 @@ void GUI::CreateControls() {
         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI"
     );
 
-    // The big title at the top
     title_label_ = CreateWindowExW(
         0, L"STATIC", L"🎯 Tab Glitcher",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
@@ -121,7 +117,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(title_label_, WM_SETFONT, (WPARAM)title_font_, TRUE);
 
-    // Button to set the hotkey
     hotkey_button_ = CreateWindowExW(
         0, L"BUTTON", L"🎯 Set Hotkey",
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | BS_PUSHBUTTON,
@@ -130,7 +125,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(hotkey_button_, WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // The Go button
     start_button_ = CreateWindowExW(
         0, L"BUTTON", L"▶ Start",
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | BS_DEFPUSHBUTTON,
@@ -139,7 +133,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(start_button_, WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // The Stop button
     stop_button_ = CreateWindowExW(
         0, L"BUTTON", L"⏹ Stop",
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | BS_PUSHBUTTON,
@@ -148,7 +141,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(stop_button_, WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // Label for the hotkey
     CreateWindowExW(
         0, L"STATIC", L"🔧 Current Hotkey:",
         WS_VISIBLE | WS_CHILD,
@@ -165,7 +157,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(hotkey_label_, WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // Label for status
     CreateWindowExW(
         0, L"STATIC", L"📊 Status:",
         WS_VISIBLE | WS_CHILD,
@@ -182,7 +173,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(status_label_, WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // How to use this thing
     CreateWindowExW(
         0, L"STATIC", 
         L"📋 Instructions:\n"
@@ -196,7 +186,6 @@ void GUI::CreateControls() {
     );
     SendMessageW(GetDlgItem(hwnd_, 6), WM_SETFONT, (WPARAM)body_font_, TRUE);
 
-    // Helpful tip
     CreateWindowExW(
         0, L"STATIC", L"ℹ️ Make sure Roblox is running before starting",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
@@ -255,14 +244,14 @@ LRESULT GUI::HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         {
             int wmId = LOWORD(wParam);
             switch (wmId) {
-            case 1: // Hotkey button
-                // Will be handled by main application
+            case 1:
+
                 break;
-            case 2: // Start button
-                // Will be handled by main application
+            case 2:
+
                 break;
-            case 3: // Stop button
-                // Will be handled by main application
+            case 3:
+
                 break;
             }
         }
@@ -271,7 +260,7 @@ LRESULT GUI::HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_CTLCOLORSTATIC:
         {
             HDC hdc = (HDC)wParam;
-            SetTextColor(hdc, RGB(33, 37, 41)); // Dark text
+            SetTextColor(hdc, RGB(33, 37, 41));
             SetBkMode(hdc, TRANSPARENT);
             return (LRESULT)GetStockObject(NULL_BRUSH);
         }
